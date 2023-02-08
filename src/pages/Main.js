@@ -1,13 +1,44 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import { useForm } from 'react-hook-form';
+import { ErrorSharp } from '@mui/icons-material';
+
 function Main() {
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm();
+	const onSubmit = data => {
+		console.log('data', data);
+		setOpenModal(false);
+	};
+
+	console.log(watch('example'));
+
+	const [openModal, setOpenModal] = useState(false);
+
+	const handleClickOpen = e => {
+		setOpenModal(true);
+	};
+
+	const handleClose = e => {
+		setOpenModal(false);
+	};
+
 	const seatNumber = [];
 
 	for (let i = 1; i <= 45; i++) {
-		if (i === 1 || i === 2) {
-			console.log(i);
-		}
 		seatNumber.push(i);
 	}
 
@@ -30,7 +61,7 @@ function Main() {
 					{/* A 열 */}
 					<Row>
 						<Left>
-							<Seat onClick={() => console.log('click!')}>1</Seat>
+							<Seat onClick={handleClickOpen}>1</Seat>
 							<Seat>2</Seat>
 							<Seat>3</Seat>
 							<Seat>4</Seat>
@@ -772,6 +803,42 @@ function Main() {
 				</Content>
 				{/* <Footer>Footer</Footer> */}
 			</MainContainer>
+			<Dialog open={openModal} onClose={handleClose}>
+				<DialogTitle>Subscribe</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						To subscribe to this website, please enter your email address here. We will send updates
+						occasionally.
+					</DialogContentText>
+					{/* <TextField
+						autoFocus
+						margin="dense"
+						id="name"
+						label="Email Address"
+						type="email"
+						fullWidth
+						variant="standard"
+					/> */}
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<input defaultValue="test" {...register('example')} />
+						<input {...register('exampleRequired', { required: true })} />
+						{errors.exampleRequired && <span>This field is required</span>}
+
+						<input type="submit" />
+					</form>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleClose}>Cancel</Button>
+					<Button onClick={handleClose}>Subscribe</Button>
+				</DialogActions>
+			</Dialog>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<input defaultValue="test" {...register('example')} />
+				<input {...register('exampleRequired', { required: true })} />
+				{errors.exampleRequired && <span>This field is required</span>}
+
+				<input type="submit" />
+			</form>
 		</>
 	);
 }
@@ -792,7 +859,7 @@ const Header = styled.div`
 
 const Content = styled.div`
 	/* background-color: gray; */
-	margin: 50%;
+	margin: 20%;
 	/* display: flex; */
 `;
 
