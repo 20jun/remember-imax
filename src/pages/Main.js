@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import moment from 'moment';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -9,24 +11,44 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { ErrorSharp } from '@mui/icons-material';
+import { Stack } from '@mui/material';
+
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker-cssmodules.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import { getValue } from '@mui/system';
 
 function Main() {
 	const {
 		register,
 		handleSubmit,
 		watch,
+		control,
+		getValues,
+		setValue,
 		formState: { errors },
-	} = useForm();
+	} = useForm({
+		defaultValues: {
+			// example: 'hihi',
+			TextField: '선택한 좌석 번호',
+			MUIPicker: moment(new Date()).format('YYYY-MM-DD'),
+			// MUIPicker: '',
+		},
+	});
+
 	const onSubmit = data => {
-		console.log('data', data);
-		setOpenModal(false);
+		console.log(getValues());
+		console.log('onSubmit', data);
+		// setOpenModal(false);
 	};
 
-	console.log(watch('example'));
-
-	const [openModal, setOpenModal] = useState(false);
+	const [openModal, setOpenModal] = useState(true);
 
 	const handleClickOpen = e => {
 		setOpenModal(true);
@@ -54,6 +76,7 @@ function Main() {
 
 	return (
 		<>
+			{/* <form onSubmit={handleSubmit(onSubmit)}> */}
 			<MainContainer>
 				<Header>Header</Header>
 				<div style={{ display: 'flex' }}>{test}</div>
@@ -804,41 +827,57 @@ function Main() {
 				{/* <Footer>Footer</Footer> */}
 			</MainContainer>
 			<Dialog open={openModal} onClose={handleClose}>
-				<DialogTitle>Subscribe</DialogTitle>
+				<DialogTitle>메모</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						To subscribe to this website, please enter your email address here. We will send updates
-						occasionally.
-					</DialogContentText>
-					{/* <TextField
-						autoFocus
-						margin="dense"
-						id="name"
-						label="Email Address"
-						type="email"
-						fullWidth
-						variant="standard"
-					/> */}
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<input defaultValue="test" {...register('example')} />
-						<input {...register('exampleRequired', { required: true })} />
-						{errors.exampleRequired && <span>This field is required</span>}
-
-						<input type="submit" />
-					</form>
+					<Stack
+						direction="column"
+						justifyContent="center"
+						alignItems="stretch"
+						spacing={2}
+						onSubmit={handleSubmit(onSubmit)}
+					>
+						<DialogContentText>후기를 작성해주세요.</DialogContentText>
+						<Controller
+							name="TextField"
+							control={control}
+							render={({ field }) => (
+								<TextField
+									label="좌석"
+									InputProps={{
+										readOnly: true,
+									}}
+									{...field}
+								/>
+							)}
+						/>
+						<LocalizationProvider dateAdapter={AdapterMoment}>
+							<Controller
+								name="MUIPicker"
+								control={control}
+								render={({ field: { value, onChange, ...field } }) => {
+									console.log(value);
+									return (
+										<DatePicker
+											value={value}
+											label="날짜 선택"
+											inputFormat="YYYY-MM-DD"
+											renderInput={params => <TextField {...params} />}
+											onChange={selectedDate =>
+												setValue('MUIPicker', moment(selectedDate).format('YYYY-MM-DD'))
+											}
+										/>
+									);
+								}}
+							/>
+						</LocalizationProvider>
+					</Stack>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleClose}>Subscribe</Button>
+					<Button onClick={handleClose}>취소</Button>
+					<Button onClick={onSubmit}>저장</Button>
 				</DialogActions>
 			</Dialog>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				<input defaultValue="test" {...register('example')} />
-				<input {...register('exampleRequired', { required: true })} />
-				{errors.exampleRequired && <span>This field is required</span>}
-
-				<input type="submit" />
-			</form>
+			{/* </form> */}
 		</>
 	);
 }
