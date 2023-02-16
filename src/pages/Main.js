@@ -12,17 +12,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { Controller, useForm } from 'react-hook-form';
-import { ErrorSharp } from '@mui/icons-material';
-import { Stack } from '@mui/material';
+
+import { InputLabel, MenuItem, Select, Stack } from '@mui/material';
 
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-// import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getValue } from '@mui/system';
 
 function Main() {
 	const {
@@ -38,13 +35,14 @@ function Main() {
 			// example: 'hihi',
 			TextField: '선택한 좌석 번호',
 			MUIPicker: moment(new Date()).format('YYYY-MM-DD'),
-			// MUIPicker: '',
+			Select: 'feel',
+			memo: '',
 		},
 	});
 
+	console.log(getValues());
 	const onSubmit = data => {
 		console.log(getValues());
-		console.log('onSubmit', data);
 		// setOpenModal(false);
 	};
 
@@ -65,17 +63,18 @@ function Main() {
 	}
 
 	const test = seatNumber.map((arg, index) => {
-		if (arg === 1 || arg === 2) {
-			return (
-				<Seat style={{ visibility: 'hidden' }} key={index}>
-					{arg}
-				</Seat>
-			);
-		}
+		return (
+			<>
+				<Seat style={{ display: 'flex' }}>{arg}</Seat>
+			</>
+		);
 	});
+
+	console.log(test);
 
 	return (
 		<>
+			{test}
 			{/* <form onSubmit={handleSubmit(onSubmit)}> */}
 			<MainContainer>
 				<Header>Header</Header>
@@ -854,7 +853,7 @@ function Main() {
 							<Controller
 								name="MUIPicker"
 								control={control}
-								render={({ field: { value, onChange, ...field } }) => {
+								render={({ field: { value, ...field } }) => {
 									console.log(value);
 									return (
 										<DatePicker
@@ -870,6 +869,38 @@ function Main() {
 								}}
 							/>
 						</LocalizationProvider>
+
+						<Controller
+							name="Select"
+							control={control}
+							render={({ field: { value, onChange, ...field } }) => {
+								console.log(field);
+								console.log('value', value);
+								return (
+									<Select {...field} value={value} onChange={onChange}>
+										<MenuItem value={'feel'}>자리는 어떠셨나요</MenuItem>
+										<MenuItem value={'good'}>좋아요</MenuItem>
+										<MenuItem value={'soso'}>보통이에요</MenuItem>
+										<MenuItem value={'bad'}>별로에요</MenuItem>
+									</Select>
+								);
+							}}
+						/>
+
+						<Controller
+							render={({ field: { onChange, value, ...field } }) => (
+								<TextField
+									{...field}
+									onChange={onChange}
+									label="메모"
+									multiline
+									rows={4}
+									placeholder="간단한 후기를 작성해주세요"
+								/>
+							)}
+							name="memo"
+							control={control}
+						/>
 					</Stack>
 				</DialogContent>
 				<DialogActions>
