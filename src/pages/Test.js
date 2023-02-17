@@ -22,6 +22,82 @@ function Test() {
 			numberOnlyArr.splice(26, 1, 0);
 			numberOnlyArr.splice(32, 0, 0);
 			numberOnlyArr.splice(46, 2, 0, 0, 0);
+		}
+
+		if (charCode === 'B' || charCode === 'C' || charCode === 'D') {
+			numberOnlyArr.splice(0, 2, 0, 0, 0);
+			numberOnlyArr.splice(16, 0, 0);
+			numberOnlyArr.splice(32, 0, 0);
+			numberOnlyArr.splice(46, 2, 0, 0, 0);
+		}
+
+		if (charCode === 'E') {
+			numberOnlyArr.splice(0, 2, 0, 0, 0);
+			numberOnlyArr.splice(16, 0, 0);
+			numberOnlyArr.splice(31, 1, 0, 0);
+			numberOnlyArr.splice(46, 2, 0, 0, 0);
+		}
+
+		if (charCode === 'F' || charCode === 'G' || charCode === 'H') {
+			numberOnlyArr.splice(0, 2, 0, 0, 0);
+			numberOnlyArr.splice(15, 1, 0, 0);
+			numberOnlyArr.splice(31, 1, 0, 0);
+			numberOnlyArr.splice(45, 3, 0, 0, 0, 0);
+		}
+
+		if (
+			charCode === 'I' ||
+			charCode === 'J' ||
+			charCode === 'K' ||
+			charCode === 'L' ||
+			charCode === 'M' ||
+			charCode === 'N' ||
+			charCode === 'O'
+		) {
+			numberOnlyArr.splice(2, 0, 0);
+			numberOnlyArr.splice(15, 1, 0, 0);
+			numberOnlyArr.splice(31, 1, 0, 0);
+			numberOnlyArr.splice(45, 1, 0, 0);
+		}
+
+		if (charCode === 'P') {
+			numberOnlyArr.splice(2, 0, 0);
+			numberOnlyArr.splice(
+				9,
+				28,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+			);
+			numberOnlyArr.splice(45, 1, 0, 0);
+
 			console.log(numberOnlyArr);
 		}
 
@@ -33,12 +109,12 @@ function Test() {
 		<div>
 			{seatInfoArr.map((arg, index) => {
 				return (
-					<div style={{ display: 'flex' }}>
+					<div style={{ display: 'flex' }} key={index}>
 						<ColCodes>{arg.charCode}</ColCodes>
 
 						{arg.numberOnlyArr.map((iii, index) => {
 							return (
-								<div>
+								<div key={index}>
 									<Seat key={index}>{iii}</Seat>
 								</div>
 							);
