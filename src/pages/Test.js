@@ -106,37 +106,46 @@ function Test() {
 
 	console.log(seatInfoArr);
 	return (
-		<div>
+		<div style={{ width: '100%' }}>
 			{seatInfoArr.map((arg, index) => {
+				console.log(arg);
 				return (
 					<div style={{ display: 'flex' }} key={index}>
 						<ColCodes>{arg.charCode}</ColCodes>
 
 						{arg.numberOnlyArr.map((iii, index) => {
+							console.log(String(iii).padStart(2, '0'));
+							const char = `${arg.charCode}${String(iii).padStart(2, '0')}`;
+
+							console.log(char);
 							return (
 								<div key={index}>
-									<Seat key={index}>{iii}</Seat>
+									<Seat key={index} onClick={e => console.log('click', char)}>
+										{iii}
+									</Seat>
 								</div>
 							);
 						})}
 					</div>
 				);
 			})}
+			<div>여기에 모달창 컴포넌트</div>
 		</div>
 	);
 }
 
 const ColCodes = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 12px;
-	height: 15px;
-	font-size: 12px;
+	left: 0px;
+	margin-bottom: 1px;
+	width: 15px;
+	height: 14px;
+	line-height: 14px;
+	border-top: 1px solid #d4d3c9;
+	font-size: 11px;
+	font-family: Verdana;
+	font-weight: bold;
 	text-align: center;
-	background-color: #333;
-	color: white;
-	margin: 1px;
+	flex: none;
 `;
 
 const Seat = styled.div`
