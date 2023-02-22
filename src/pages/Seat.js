@@ -10,10 +10,15 @@ import moment from 'moment';
 function Seat() {
 	const [clickedSeatRow, setClickedSeatRow] = useState('');
 	const [openModal, setOpenModal] = useState(false);
+	const [countIndex, setCountIndex] = useState(0);
 
 	const onClickNumber = (number, toggle) => {
 		setClickedSeatRow(number);
 		setOpenModal(toggle);
+	};
+
+	const handleOnClick = (e, charCode, idx) => {
+		setCountIndex({ charCode, idx });
 	};
 
 	let numberOnlyArr = [];
@@ -127,16 +132,20 @@ function Seat() {
 							const char = `${rows.charCode}${String(number).padStart(2, '0')}`;
 
 							return (
-								<div key={index}>
-									<Number
-										key={index}
-										onClick={() => {
-											onClickNumber(char, true);
-										}}
-									>
-										{number}
-									</Number>
-								</div>
+								<Number
+									key={index}
+									onClick={e => {
+										onClickNumber(char, true);
+										handleOnClick(e, rows.charCode, index);
+									}}
+									selected={
+										countIndex.charCode === rows.charCode && countIndex.idx === index && openModal
+											? true
+											: false
+									}
+								>
+									{number}
+								</Number>
 							);
 						})}
 					</Content>
@@ -179,7 +188,8 @@ const Number = styled.div`
 	height: 15px;
 	font-size: 10px;
 	text-align: center;
-	background-color: #333;
+	/* background-color: #333; */
+	background-color: ${props => (props.selected ? 'pink' : '#333')};
 	color: white;
 	margin: 1px;
 	cursor: pointer;

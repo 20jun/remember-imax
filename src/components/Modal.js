@@ -38,11 +38,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 		},
 	});
 
-	console.log(watch());
-
-	console.log(clickedSeatRow);
-	console.log(openModal);
-
 	const onSubmit = data => {
 		onClickNumber('', false);
 	};
