@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+
 import styled from 'styled-components';
 
-function Test() {
+import 'react-datepicker/dist/react-datepicker.css';
+import Modal from '../components/Modal';
+import { useForm } from 'react-hook-form';
+import moment from 'moment';
+
+function Seat() {
+	const [clickedSeatRow, setClickedSeatRow] = useState('');
+	const [openModal, setOpenModal] = useState(false);
+
+	const onClickNumber = (number, toggle) => {
+		setClickedSeatRow(number);
+		setOpenModal(toggle);
+	};
+
 	let numberOnlyArr = [];
 	const seatInfoArr = [];
 
+	// 좌석 만들기
 	for (let cols = 1; cols <= 16; cols++) {
 		// 알파벳 변환
 		const charCode = String.fromCharCode(cols + 64);
@@ -15,7 +30,6 @@ function Test() {
 		}
 
 		if (charCode === 'A') {
-			console.log('A입니다');
 			numberOnlyArr.splice(0, 2, 0, 0, 0);
 			numberOnlyArr.splice(16, 1, 0, 0);
 			numberOnlyArr.splice(21, 2, 0, 0);
@@ -97,44 +111,53 @@ function Test() {
 				0,
 			);
 			numberOnlyArr.splice(45, 1, 0, 0);
-
-			console.log(numberOnlyArr);
 		}
 
 		seatInfoArr.push({ charCode, numberOnlyArr });
 	}
 
-	console.log(seatInfoArr);
 	return (
-		<div style={{ width: '100%' }}>
-			{seatInfoArr.map((arg, index) => {
-				console.log(arg);
+		<Container>
+			{seatInfoArr.map((rows, index) => {
 				return (
-					<div style={{ display: 'flex' }} key={index}>
-						<ColCodes>{arg.charCode}</ColCodes>
+					<Content key={index}>
+						<Row>{rows.charCode}</Row>
 
-						{arg.numberOnlyArr.map((iii, index) => {
-							console.log(String(iii).padStart(2, '0'));
-							const char = `${arg.charCode}${String(iii).padStart(2, '0')}`;
+						{rows.numberOnlyArr.map((number, index) => {
+							const char = `${rows.charCode}${String(number).padStart(2, '0')}`;
 
-							console.log(char);
 							return (
 								<div key={index}>
-									<Seat key={index} onClick={e => console.log('click', char)}>
-										{iii}
-									</Seat>
+									<Number
+										key={index}
+										onClick={() => {
+											onClickNumber(char, true);
+										}}
+									>
+										{number}
+									</Number>
 								</div>
 							);
 						})}
-					</div>
+					</Content>
 				);
 			})}
-			<div>여기에 모달창 컴포넌트</div>
-		</div>
+			<Modal clickedSeatRow={clickedSeatRow} openModal={openModal} onClickNumber={onClickNumber} />
+		</Container>
 	);
 }
 
-const ColCodes = styled.div`
+const Container = styled.div`
+	margin-left: 100px;
+	width: 100%;
+`;
+
+const Content = styled.div`
+	display: flex;
+`;
+
+const Row = styled.div`
+	display: flex;
 	left: 0px;
 	margin-bottom: 1px;
 	width: 15px;
@@ -148,7 +171,7 @@ const ColCodes = styled.div`
 	flex: none;
 `;
 
-const Seat = styled.div`
+const Number = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -163,4 +186,4 @@ const Seat = styled.div`
 	visibility: ${props => (props.children === 0 ? 'hidden' : null)};
 `;
 
-export default Test;
+export default Seat;
