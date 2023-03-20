@@ -189,7 +189,7 @@ const Number = styled.div`
 	font-size: 10px;
 	text-align: center;
 	/* background-color: #333; */
-	background-color: ${props => (props.selected ? 'pink' : '#333')};
+	background-color: ${props => (props.selected ? 'gray' : '#333')};
 	color: white;
 	margin: 1px;
 	cursor: pointer;

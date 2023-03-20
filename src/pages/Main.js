@@ -13,7 +13,7 @@ function Main() {
 	return (
 		<>
 			<MainContainer>
-				<Header>Header</Header>
+				<Header>Screen</Header>
 				<Seat />
 			</MainContainer>
 		</>
