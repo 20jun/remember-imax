@@ -125,12 +125,17 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 								}}
 							/>
 							{/* 이미지 첨부 */}
-							<Button onChange={onChangeImage} variant="contained" component="label">
+							{/* <Button onChange={onChangeImage} variant="contained" component="label">
 								이미지 첨부
 								<input {...register('picture')} accept="image/*" hidden multiple type="file" />
-							</Button>
+							</Button> */}
 							{/* 첨부 이미지 미리보기 */}
-							<Box component="label" sx={{ p: 2, border: '1px dashed grey', height: 300 }}>
+							<Box
+								onChange={onChangeImage}
+								component="label"
+								sx={{ border: '1px dashed grey', height: 300 }}
+							>
+								<input {...register('picture')} accept="image/*" hidden multiple type="file" />
 								<img
 									style={{ objectFit: 'contain', width: '100%', height: '100%' }}
 									src={picture && picture}
