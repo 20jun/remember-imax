@@ -6,6 +6,7 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	IconButton,
 	MenuItem,
 	Select,
 	Stack,
@@ -18,6 +19,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import React, { useEffect, useState } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
+import { PhotoCamera } from '@mui/icons-material';
 
 function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 	const {
@@ -133,13 +135,23 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 							<Box
 								onChange={onChangeImage}
 								component="label"
-								sx={{ border: '1px dashed grey', height: 300 }}
+								sx={{
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									border: '1px dashed grey',
+									height: 300,
+								}}
 							>
 								<input {...register('picture')} accept="image/*" hidden multiple type="file" />
-								<img
-									style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-									src={picture && picture}
-								/>
+								{picture ? (
+									<img
+										style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+										src={picture}
+									/>
+								) : (
+									<PhotoCamera sx={{}} color="primary" fontSize="large" />
+								)}
 							</Box>
 							<Controller
 								render={({ field: { onChange, value, ...field } }) => (
@@ -161,7 +173,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 						<Button onClick={handleClose}>취소</Button>
 						<Button type="submit">저장</Button>
 					</DialogActions>
-					<input type="submit" />
 				</form>
 			</Dialog>
 		</>
