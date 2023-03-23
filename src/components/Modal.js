@@ -21,6 +21,8 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { PhotoCamera } from '@mui/icons-material';
 
+import axios from 'axios';
+
 function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 	const {
 		register,
@@ -67,6 +69,10 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 	};
 	useEffect(() => {
 		setValue('TextField', clickedSeatRow);
+		axios
+			.get('/api/test/')
+			.then(res => console.log(res))
+			.catch();
 	}, [clickedSeatRow]);
 
 	return (
