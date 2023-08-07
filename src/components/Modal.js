@@ -6,7 +6,6 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-	IconButton,
 	MenuItem,
 	Select,
 	Stack,
@@ -132,12 +131,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 									);
 								}}
 							/>
-							{/* 이미지 첨부 */}
-							{/* <Button onChange={onChangeImage} variant="contained" component="label">
-								이미지 첨부
-								<input {...register('picture')} accept="image/*" hidden multiple type="file" />
-							</Button> */}
-							{/* 첨부 이미지 미리보기 */}
+
 							<Box
 								onChange={onChangeImage}
 								component="label"

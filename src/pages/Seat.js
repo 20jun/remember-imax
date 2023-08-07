@@ -4,8 +4,6 @@ import styled from 'styled-components';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from '../components/Modal';
-import { useForm } from 'react-hook-form';
-import moment from 'moment';
 
 function Seat() {
 	const [clickedSeatRow, setClickedSeatRow] = useState('');
@@ -122,7 +120,7 @@ function Seat() {
 	}
 
 	return (
-		<Container>
+		<div>
 			{seatInfoArr.map((rows, index) => {
 				return (
 					<Content key={index}>
@@ -152,14 +150,9 @@ function Seat() {
 				);
 			})}
 			<Modal clickedSeatRow={clickedSeatRow} openModal={openModal} onClickNumber={onClickNumber} />
-		</Container>
+		</div>
 	);
 }
-
-const Container = styled.div`
-	margin-left: 100px;
-	width: 100%;
-`;
 
 const Content = styled.div`
 	display: flex;
@@ -188,7 +181,6 @@ const Number = styled.div`
 	height: 15px;
 	font-size: 10px;
 	text-align: center;
-	/* background-color: #333; */
 	background-color: ${props => (props.selected ? 'gray' : '#333')};
 	color: white;
 	margin: 1px;
