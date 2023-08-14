@@ -41,31 +41,39 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 		},
 	});
 
-	console.log(watch());
-
+	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
 
+	// 성공적으로 저장 시 발생하는 submit 이벤트
+	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
 		console.log(data);
+		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
+		// 모달 창이 다시 열렀을 때 이전에 첨부한 이미지는 없어야 됨
 		setPicture(null);
 	};
 
+	// 취소 버튼 클릭 시 모달 창 닫기 위한 이벤트
 	const handleClose = e => {
 		onClickNumber('', false);
 	};
 
+	// 모달 창 열릴 시 이벤트
 	const handleOpen = e => {
 		// onClickNumber('', false);
 	};
 
+	// 이미지 관련 함수
 	const onChangeImage = e => {
 		console.log(e.target.files[0]);
 
-		// const reader = new FileReader();
-
-		setPicture(URL.createObjectURL(e.target.files[0]));
+		if (e.target.files[0] !== undefined) {
+			setPicture(URL.createObjectURL(e.target.files[0]));
+		}
 	};
+
+	// 선택한 좌석이 바뀔 때 마다 TextField(좌석번호)의 값을 선택한 좌석번호로 초기화
 	useEffect(() => {
 		setValue('TextField', clickedSeatRow);
 		axios
