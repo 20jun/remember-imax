@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-import styled from 'styled-components';
+import Modal from '../components/Modal';
+import createSeat from '../components/createSeat';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import Modal from '../components/Modal';
+import styled from 'styled-components';
 
 function Seat() {
 	// 클릭한 좌석의 열과 번호 합쳐서 저장
@@ -30,115 +31,9 @@ function Seat() {
 		setCountIndex({ charCode, idx });
 	};
 
-	// A열부터 P열까지 각 1열마다 좌석의 존재유무 저장하는 배열
-	// 없는 좌석인 경우 0, 있는 좌석인 경우에는 숫자 저장
-	let numberOnlyArr = [];
-	// 알파벳으로 열을 표현하고 각 열마다 numberOnlyArr 배열을 넣어 전체 좌석의 정보를 저장하는 배열
-	// [{charCode: 'A', numberOnlyArr [0,0,1,2,3 ...]}, {charCode: 'B', numberOnlyArr [0,0,1,2,3 ...]}]
-	const seatInfoArr = [];
-
-	// 좌석을 만들기 위한 for문
-	// cols(행)가 A에서 P까지
-	for (let cols = 1; cols <= 16; cols++) {
-		// 알파벳 변환
-		const charCode = String.fromCharCode(cols + 64);
-		// 다음 열을 생성하기 위해 배열 초기화
-		numberOnlyArr = [];
-		// rows(열)가 1부터 45까지
-		for (let rows = 1; rows <= 45; rows++) {
-			// 1부터 45까지 numberOnlyArr에 저장
-			// [1,2,3,4,5 ...]
-			numberOnlyArr.push(rows);
-		}
-
-		// 없는 좌석을 위한 if 문
-		// CGV 좌석을 기준으로 구현하였으며 언제든지 변경될 수 있음.
-		if (charCode === 'A') {
-			numberOnlyArr.splice(0, 2, 0, 0, 0);
-			numberOnlyArr.splice(16, 1, 0, 0);
-			numberOnlyArr.splice(21, 2, 0, 0);
-			numberOnlyArr.splice(26, 1, 0);
-			numberOnlyArr.splice(32, 0, 0);
-			numberOnlyArr.splice(46, 2, 0, 0, 0);
-		}
-
-		if (charCode === 'B' || charCode === 'C' || charCode === 'D') {
-			numberOnlyArr.splice(0, 2, 0, 0, 0);
-			numberOnlyArr.splice(16, 0, 0);
-			numberOnlyArr.splice(32, 0, 0);
-			numberOnlyArr.splice(46, 2, 0, 0, 0);
-		}
-
-		if (charCode === 'E') {
-			numberOnlyArr.splice(0, 2, 0, 0, 0);
-			numberOnlyArr.splice(16, 0, 0);
-			numberOnlyArr.splice(31, 1, 0, 0);
-			numberOnlyArr.splice(46, 2, 0, 0, 0);
-		}
-
-		if (charCode === 'F' || charCode === 'G' || charCode === 'H') {
-			numberOnlyArr.splice(0, 2, 0, 0, 0);
-			numberOnlyArr.splice(15, 1, 0, 0);
-			numberOnlyArr.splice(31, 1, 0, 0);
-			numberOnlyArr.splice(45, 3, 0, 0, 0, 0);
-		}
-
-		if (
-			charCode === 'I' ||
-			charCode === 'J' ||
-			charCode === 'K' ||
-			charCode === 'L' ||
-			charCode === 'M' ||
-			charCode === 'N' ||
-			charCode === 'O'
-		) {
-			numberOnlyArr.splice(2, 0, 0);
-			numberOnlyArr.splice(15, 1, 0, 0);
-			numberOnlyArr.splice(31, 1, 0, 0);
-			numberOnlyArr.splice(45, 1, 0, 0);
-		}
-
-		if (charCode === 'P') {
-			numberOnlyArr.splice(2, 0, 0);
-			numberOnlyArr.splice(
-				9,
-				28,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-			);
-			numberOnlyArr.splice(45, 1, 0, 0);
-		}
-		// seatInfoArr에 해당 열의 알파벳, 좌석 유무 저장
-		seatInfoArr.push({ charCode, numberOnlyArr });
-	}
+	// 좌석 생성
+	const seatInfoArr = createSeat();
+	console.log('seatInfoArr:', seatInfoArr);
 
 	return (
 		<div>
@@ -164,7 +59,6 @@ function Seat() {
 									}}
 									// 클릭한(선택한) 좌석의 행과 열이 현재 생성된 좌석의 정보와 일치하는지 확인하고
 									// openModal까지 true인 경우 selected = true
-									// todo
 									selected={
 										countIndex.charCode === rows.charCode && countIndex.idx === index && openModal
 											? true

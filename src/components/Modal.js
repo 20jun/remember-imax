@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
+import moment from 'moment';
+import axios from 'axios';
+
 import {
 	Box,
 	Button,
@@ -11,18 +17,12 @@ import {
 	Stack,
 	TextField,
 } from '@mui/material';
-
-import moment from 'moment';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import React, { useEffect, useState } from 'react';
-
-import { Controller, useForm } from 'react-hook-form';
 import { PhotoCamera } from '@mui/icons-material';
-
-import axios from 'axios';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
+	console.log('clickedSeatRow:', clickedSeatRow, 'openModal:', openModal);
 	const {
 		register,
 		handleSubmit,
@@ -34,7 +34,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
-			TextField: '',
+			TextField: clickedSeatRow,
 			MUIPicker: moment(new Date()).format('YYYY-MM-DD'),
 			Select: 'feel',
 			memo: '',
@@ -43,11 +43,15 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
+	const [testArr, setTestArr] = useState([]);
+	console.log(testArr);
 
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
 		console.log(data);
+		setTestArr([...testArr, data]);
+
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
 		// 모달 창이 다시 열렀을 때 이전에 첨부한 이미지는 없어야 됨
@@ -74,13 +78,15 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 	};
 
 	// 선택한 좌석이 바뀔 때 마다 TextField(좌석번호)의 값을 선택한 좌석번호로 초기화
-	useEffect(() => {
-		setValue('TextField', clickedSeatRow);
-		axios
-			.get('/api/test/')
-			.then(res => console.log(res))
-			.catch();
-	}, [clickedSeatRow]);
+	// useEffect(() => {
+	// 	setValue('TextField', clickedSeatRow);
+	// 	setValue('MUIPicker', moment(new Date()).format('YYYY-MM-DD'));
+
+	// 	axios
+	// 		.get('/api/test/')
+	// 		.then(res => console.log(res))
+	// 		.catch();
+	// }, [clickedSeatRow]);
 
 	return (
 		<>
