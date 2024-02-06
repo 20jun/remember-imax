@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import moment from 'moment';
-import axios from 'axios';
 
 import {
 	Box,
@@ -21,8 +20,8 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
+// TODO: local에 메모 저장
 function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
-	console.log('clickedSeatRow:', clickedSeatRow, 'openModal:', openModal);
 	const {
 		register,
 		handleSubmit,
@@ -43,14 +42,11 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
-	const [testArr, setTestArr] = useState([]);
-	console.log(testArr);
 
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
 		console.log(data);
-		setTestArr([...testArr, data]);
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
@@ -63,11 +59,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 		onClickNumber('', false);
 	};
 
-	// 모달 창 열릴 시 이벤트
-	const handleOpen = e => {
-		// onClickNumber('', false);
-	};
-
 	// 이미지 관련 함수
 	const onChangeImage = e => {
 		console.log(e.target.files[0]);
@@ -78,15 +69,15 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 	};
 
 	// 선택한 좌석이 바뀔 때 마다 TextField(좌석번호)의 값을 선택한 좌석번호로 초기화
-	// useEffect(() => {
-	// 	setValue('TextField', clickedSeatRow);
-	// 	setValue('MUIPicker', moment(new Date()).format('YYYY-MM-DD'));
+	useEffect(() => {
+		setValue('TextField', clickedSeatRow);
+		setValue('MUIPicker', moment(new Date()).format('YYYY-MM-DD'));
 
-	// 	axios
-	// 		.get('/api/test/')
-	// 		.then(res => console.log(res))
-	// 		.catch();
-	// }, [clickedSeatRow]);
+		// axios
+		// 	.get('/api/test/')
+		// 	.then(res => console.log(res))
+		// 	.catch();
+	}, []);
 
 	return (
 		<>
@@ -168,6 +159,8 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 								)}
 							</Box>
 							<Controller
+								name="memo"
+								control={control}
 								render={({ field: { onChange, value, ...field } }) => (
 									<TextField
 										{...field}
@@ -178,8 +171,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 										placeholder="간단한 후기를 작성해주세요"
 									/>
 								)}
-								name="memo"
-								control={control}
 							/>
 						</Stack>
 					</DialogContent>

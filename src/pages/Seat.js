@@ -16,6 +16,9 @@ function Seat() {
 	// {charCode: 'A', idx: 29}
 	const [countIndex, setCountIndex] = useState(0);
 
+	console.log('clickedSeatRow:', clickedSeatRow);
+	console.log('countIndex:', countIndex);
+
 	// 좌석 클릭
 	// number: A29
 	// toggle: true & false
@@ -33,7 +36,7 @@ function Seat() {
 
 	// 좌석 생성
 	const seatInfoArr = createSeat();
-	console.log('seatInfoArr:', seatInfoArr);
+	console.log(seatInfoArr);
 
 	return (
 		<div>
@@ -55,7 +58,6 @@ function Seat() {
 										// 좌석 클릭 시 변수 char와 toggle값으로 true 전달
 										onClickNumber(char, true);
 										handleOnClick(e, rows.charCode, index);
-										console.log('1', countIndex, '2', rows);
 									}}
 									// 클릭한(선택한) 좌석의 행과 열이 현재 생성된 좌석의 정보와 일치하는지 확인하고
 									// openModal까지 true인 경우 selected = true
@@ -72,7 +74,14 @@ function Seat() {
 					</Content>
 				);
 			})}
-			<Modal clickedSeatRow={clickedSeatRow} openModal={openModal} onClickNumber={onClickNumber} />
+			{/* FIXME: 조건을 달지 않으면 화면에는 보이지 않지만 렌더링이 한 번 됨 */}
+			{openModal ? (
+				<Modal
+					clickedSeatRow={clickedSeatRow}
+					openModal={openModal}
+					onClickNumber={onClickNumber}
+				/>
+			) : null}
 		</div>
 	);
 }
