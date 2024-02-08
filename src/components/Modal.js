@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { supabase } from '../supabaseClient';
 
 import moment from 'moment';
 
@@ -42,10 +43,30 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
+	const [info, setInfo] = useState([]);
+
+	console.log(info);
+
+	async function getInfo() {
+		const supaAll = await supabase.from('INFO').select();
+		setInfo(supaAll);
+	}
+
+	async function insertInfo() {
+		const ii = await supabase.from('INFO').insert({
+			seat: 'A01',
+			selected_at: new Date(),
+			feel: 'good',
+			imageSrc: 'test/test',
+			memo: '좋았어',
+		});
+		console.log(ii);
+	}
 
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
+		insertInfo();
 		console.log(data);
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
@@ -77,6 +98,10 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, ...props }) {
 		// 	.get('/api/test/')
 		// 	.then(res => console.log(res))
 		// 	.catch();
+	}, []);
+
+	useEffect(() => {
+		getInfo();
 	}, []);
 
 	return (
