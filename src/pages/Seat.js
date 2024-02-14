@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 import Modal from '../components/Modal';
 import createSeat from '../components/createSeat';
@@ -16,8 +17,13 @@ function Seat() {
 	// {charCode: 'A', idx: 29}
 	const [countIndex, setCountIndex] = useState(0);
 
+	const [infoAll, setInfoAll] = useState([]);
+
 	console.log('clickedSeatRow:', clickedSeatRow);
 	console.log('countIndex:', countIndex);
+
+	// 좌석 생성
+	const seatInfoArr = createSeat();
 
 	// 좌석 클릭
 	// number: A29
@@ -34,8 +40,15 @@ function Seat() {
 		setCountIndex({ charCode, idx });
 	};
 
-	// 좌석 생성
-	const seatInfoArr = createSeat();
+	async function getInfo() {
+		const supaAll = await supabase.from('INFO').select();
+		setInfoAll(supaAll);
+	}
+
+	useEffect(() => {
+		getInfo();
+	}, []);
+
 	console.log(seatInfoArr);
 
 	return (
@@ -80,6 +93,7 @@ function Seat() {
 					clickedSeatRow={clickedSeatRow}
 					openModal={openModal}
 					onClickNumber={onClickNumber}
+					infoAll={infoAll}
 				/>
 			) : null}
 		</div>
