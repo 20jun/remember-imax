@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { getInfo, getSeatInfo } from '../components/seatAPI';
 
 import Modal from '../components/Modal';
 import createSeat from '../components/createSeat';
@@ -19,8 +20,7 @@ function Seat() {
 
 	const [infoAll, setInfoAll] = useState([]);
 
-	console.log('clickedSeatRow:', clickedSeatRow);
-	console.log('countIndex:', countIndex);
+	const [checkId, setCheckId] = useState(null);
 
 	// 좌석 생성
 	const seatInfoArr = createSeat();
@@ -29,9 +29,18 @@ function Seat() {
 	// number: A29
 	// toggle: true & false
 	const onClickNumber = (number, toggle) => {
-		setClickedSeatRow(number);
+		console.log('onClickNumber', number, toggle);
 		setOpenModal(toggle);
+		setClickedSeatRow(number);
+
+		const filter = infoAll.data.find(test => test.seat === number);
+		console.log(filter);
+		setCheckId(filter);
+		// console.log(number);
+		// getSeatInfo(number).then(res => setCheckId(res.data[0]));
 	};
+	console.log(checkId);
+
 	// 좌석 클릭
 	// e: event
 	// charCode: 'A', 'B' ...
@@ -40,16 +49,9 @@ function Seat() {
 		setCountIndex({ charCode, idx });
 	};
 
-	async function getInfo() {
-		const supaAll = await supabase.from('INFO').select();
-		setInfoAll(supaAll);
-	}
-
 	useEffect(() => {
-		getInfo();
-	}, []);
-
-	console.log(seatInfoArr);
+		getInfo().then(result => setInfoAll(result));
+	}, [openModal]);
 
 	return (
 		<div>
@@ -94,6 +96,7 @@ function Seat() {
 					openModal={openModal}
 					onClickNumber={onClickNumber}
 					infoAll={infoAll}
+					checkId={checkId}
 				/>
 			) : null}
 		</div>

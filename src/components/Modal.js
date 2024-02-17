@@ -20,9 +20,11 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo } from './seatAPI';
 
 // TODO: local에 메모 저장
-function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) {
+function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...props }) {
+	console.log('checkId', checkId);
 	const {
 		register,
 		handleSubmit,
@@ -34,52 +36,53 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
-			TextField: clickedSeatRow,
-			MUIPicker: moment(new Date()).format('YYYY-MM-DD'),
-			Select: 'feel',
-			memo: '',
+			TextField: checkId ? checkId?.seat : clickedSeatRow,
+			MUIPicker: checkId ? checkId?.selected_at : moment(new Date()).format('YYYY-MM-DD'),
+			Select: checkId ? checkId?.feel : 'feel',
+			memo: checkId ? checkId?.memo : '',
 		},
 	});
-
-	console.log(infoAll);
 
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
 	const [insertAndUpdate, setInsertAndUpdate] = useState('저장');
+	const [clickedSeatData, setClickedSeatData] = useState(false);
+	const [changeData, setChangeData] = useState(null);
+	const [resetData, setResetData] = useState({});
 
-	async function insertInfo(data) {
-		const insertData = await supabase.from('INFO').insert({
-			seat: data.TextField,
-			selected_at: data.MUIPicker,
-			feel: data.Select,
-			imageSrc: data.picture,
-			memo: data.memo,
-		});
-	}
+	const channelA = supabase
+		.channel('table-db-changes')
+		.on(
+			'postgres_changes',
+			{
+				event: '*',
+				schema: 'public',
+			},
+			payload => {
+				console.log('change작동', payload);
+				setChangeData(payload);
+			},
+		)
+		.subscribe();
 
-	async function updateInfo(data) {
-		const updateData = await supabase
-			.from('INFO')
-			.update({
-				seat: data.TextField,
-				selected_at: data.MUIPicker,
-				feel: data.Select,
-				imageSrc: data.picture,
-				memo: data.memo,
-			})
-			.eq('id', infoAll.data.find(test => test.seat === clickedSeatRow).id);
-	}
+	const onClickDeleteButton = () => {
+		deleteInfo(checkId);
+		onClickNumber('', false);
+		setClickedSeatData(false);
+	};
 
-	console.log(watch());
-
+	console.log('watch', watch());
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
 		if (insertAndUpdate === '저장') {
 			insertInfo(data);
 		} else {
-			updateInfo(data);
+			console.log('수정');
+			updateInfo(data, checkId);
 		}
+
+		setClickedSeatData(false);
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
@@ -90,6 +93,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 	// 취소 버튼 클릭 시 모달 창 닫기 위한 이벤트
 	const handleClose = e => {
 		onClickNumber('', false);
+		setClickedSeatData(false);
 	};
 
 	// 이미지 관련 함수
@@ -101,24 +105,24 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 		}
 	};
 
-	// 선택한 좌석이 바뀔 때 마다 TextField(좌석번호)의 값을 선택한 좌석번호로 초기화
 	useEffect(() => {
-		setValue('TextField', clickedSeatRow);
-		setValue('MUIPicker', moment(new Date()).format('YYYY-MM-DD'));
-	}, []);
+		if (checkId !== null && checkId !== undefined) {
+			setClickedSeatData(true);
+			setInsertAndUpdate('수정');
+		}
+	}, [checkId]);
 
 	useEffect(() => {
-		const testFilter = infoAll.data.find(test => test.seat === clickedSeatRow);
-		console.log(testFilter);
-		if (testFilter !== undefined) {
-			setInsertAndUpdate('수정');
-			setValue('TextField', testFilter.seat);
-			setValue('MUIPicker', moment(testFilter.selected_at).format('YYYY-MM-DD'));
-			setValue('Select', testFilter.feel);
-			setValue('memo', testFilter.memo);
+		if (checkId) {
+			getSeatInfo(clickedSeatRow).then(res => {
+				console.log(res);
+				setValue('TextField', res.data[0].seat);
+				setValue('MUIPicker', moment(res.data[0].selected_at).format('YYYY-MM-DD'));
+				setValue('Select', res.data[0].feel);
+				setValue('memo', res.data[0].memo);
+			});
 		}
 	}, []);
-	console.log(insertAndUpdate);
 
 	return (
 		<>
@@ -135,7 +139,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 									return (
 										<TextField
 											label="좌석"
-											value={clickedSeatRow}
+											// value={clickedSeatRow}
 											InputProps={{
 												readOnly: true,
 											}}
@@ -168,7 +172,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 								control={control}
 								render={({ field: { value, onChange, ...field } }) => {
 									return (
-										<Select {...field} value={value} onChange={onChange}>
+										<Select {...field} defaultValue={'feel'} onChange={onChange}>
 											<MenuItem value={'feel'}>자리는 어떠셨나요</MenuItem>
 											<MenuItem value={'good'}>좋아요</MenuItem>
 											<MenuItem value={'soso'}>보통이에요</MenuItem>
@@ -215,11 +219,13 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, ...props }) 
 								)}
 							/>
 						</Stack>
+						<DialogActions>
+							{clickedSeatData ? <Button onClick={onClickDeleteButton}>삭제</Button> : null}
+							<Box sx={{ flexGrow: 1 }} />
+							<Button onClick={handleClose}>취소</Button>
+							<Button type="submit">{insertAndUpdate}</Button>
+						</DialogActions>
 					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleClose}>취소</Button>
-						<Button type="submit">{insertAndUpdate}</Button>
-					</DialogActions>
 				</form>
 			</Dialog>
 		</>
