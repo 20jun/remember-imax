@@ -29,17 +29,17 @@ function Seat() {
 	// number: A29
 	// toggle: true & false
 	const onClickNumber = (number, toggle) => {
-		console.log('onClickNumber', number, toggle);
+		console.log('onClickNumber 좌석 클릭', number, toggle);
 		setOpenModal(toggle);
 		setClickedSeatRow(number);
 
-		const filter = infoAll.data.find(test => test.seat === number);
-		console.log(filter);
-		setCheckId(filter);
-		// console.log(number);
-		// getSeatInfo(number).then(res => setCheckId(res.data[0]));
+		if (toggle) {
+			// FIXME: infoAll은 Seat 컴포넌트 생성 시에만 작동하기 때문에 id로 불러오기 수정
+			const filter = infoAll.data.find(test => test.seat === number);
+			console.log('클릭한 좌석의 데이터가 목록에 있는지 확인 후 checkId에 저장', filter);
+			setCheckId(filter);
+		}
 	};
-	console.log(checkId);
 
 	// 좌석 클릭
 	// e: event
@@ -50,8 +50,9 @@ function Seat() {
 	};
 
 	useEffect(() => {
+		console.log('새로고침 시 가장 먼저 시작하는 useEffect로 테이블 데이터 전부 가져옴');
 		getInfo().then(result => setInfoAll(result));
-	}, [openModal]);
+	}, []);
 
 	return (
 		<div>

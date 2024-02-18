@@ -24,7 +24,7 @@ import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo } from './seat
 
 // TODO: local에 메모 저장
 function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...props }) {
-	console.log('checkId', checkId);
+	console.log('openModel true되어 Modal 컴포넌트 실행');
 	const {
 		register,
 		handleSubmit,
@@ -46,10 +46,11 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
 	const [insertAndUpdate, setInsertAndUpdate] = useState('저장');
-	const [clickedSeatData, setClickedSeatData] = useState(false);
+
 	const [changeData, setChangeData] = useState(null);
 	const [resetData, setResetData] = useState({});
 
+	// DB에 변화가 있을 때 실행됨
 	const channelA = supabase
 		.channel('table-db-changes')
 		.on(
@@ -68,21 +69,18 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 	const onClickDeleteButton = () => {
 		deleteInfo(checkId);
 		onClickNumber('', false);
-		setClickedSeatData(false);
 	};
 
-	console.log('watch', watch());
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
 		if (insertAndUpdate === '저장') {
+			console.log('저장:', data);
 			insertInfo(data);
 		} else {
-			console.log('수정');
+			console.log('수정:', data);
 			updateInfo(data, checkId);
 		}
-
-		setClickedSeatData(false);
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
@@ -93,7 +91,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 	// 취소 버튼 클릭 시 모달 창 닫기 위한 이벤트
 	const handleClose = e => {
 		onClickNumber('', false);
-		setClickedSeatData(false);
 	};
 
 	// 이미지 관련 함수
@@ -106,23 +103,17 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 	};
 
 	useEffect(() => {
-		if (checkId !== null && checkId !== undefined) {
-			setClickedSeatData(true);
-			setInsertAndUpdate('수정');
-		}
-	}, [checkId]);
-
-	useEffect(() => {
+		console.log('openModal 값에 따라 재렌더링하는 useEffect이고 이 때의 checkId값:', checkId);
 		if (checkId) {
+			setInsertAndUpdate('수정');
 			getSeatInfo(clickedSeatRow).then(res => {
-				console.log(res);
 				setValue('TextField', res.data[0].seat);
 				setValue('MUIPicker', moment(res.data[0].selected_at).format('YYYY-MM-DD'));
 				setValue('Select', res.data[0].feel);
 				setValue('memo', res.data[0].memo);
 			});
 		}
-	}, []);
+	}, [openModal]);
 
 	return (
 		<>
@@ -220,7 +211,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 							/>
 						</Stack>
 						<DialogActions>
-							{clickedSeatData ? <Button onClick={onClickDeleteButton}>삭제</Button> : null}
+							{checkId ? <Button onClick={onClickDeleteButton}>삭제</Button> : null}
 							<Box sx={{ flexGrow: 1 }} />
 							<Button onClick={handleClose}>취소</Button>
 							<Button type="submit">{insertAndUpdate}</Button>
