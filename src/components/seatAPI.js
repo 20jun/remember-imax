@@ -14,7 +14,7 @@ export async function insertInfo(data) {
 	const insertData = await supabase.from('INFO').insert({
 		seat: data.TextField,
 		selected_at: data.MUIPicker,
-		feel: data.Select,
+		feel: data.SelectMenu,
 		imageSrc: data.picture,
 		memo: data.memo,
 	});
@@ -28,7 +28,7 @@ export async function updateInfo(data, id) {
 		.update({
 			seat: data.TextField,
 			selected_at: data.MUIPicker,
-			feel: data.Select,
+			feel: data.SelectMenu,
 			imageSrc: data.picture,
 			memo: data.memo,
 		})

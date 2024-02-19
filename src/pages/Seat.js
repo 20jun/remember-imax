@@ -32,12 +32,14 @@ function Seat() {
 		console.log('onClickNumber 좌석 클릭', number, toggle);
 		setOpenModal(toggle);
 		setClickedSeatRow(number);
+		setCheckId(null);
 
+		//  TODO: 규모가 커지게되면 캐시로 다루는 것이 좋음
 		if (toggle) {
-			// FIXME: infoAll은 Seat 컴포넌트 생성 시에만 작동하기 때문에 id로 불러오기 수정
-			const filter = infoAll.data.find(test => test.seat === number);
-			console.log('클릭한 좌석의 데이터가 목록에 있는지 확인 후 checkId에 저장', filter);
-			setCheckId(filter);
+			getSeatInfo(number).then(res => {
+				console.log(res.data[0]);
+				setCheckId(res.data[0]);
+			});
 		}
 	};
 

@@ -22,7 +22,6 @@ import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo } from './seatAPI';
 
-// TODO: local에 메모 저장
 function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...props }) {
 	console.log('openModel true되어 Modal 컴포넌트 실행');
 	const {
@@ -36,10 +35,10 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
-			TextField: checkId ? checkId?.seat : clickedSeatRow,
-			MUIPicker: checkId ? checkId?.selected_at : moment(new Date()).format('YYYY-MM-DD'),
-			Select: checkId ? checkId?.feel : 'feel',
-			memo: checkId ? checkId?.memo : '',
+			TextField: clickedSeatRow,
+			MUIPicker: moment(new Date()).format('YYYY-MM-DD'),
+			SelectMenu: 'feel',
+			memo: '',
 		},
 	});
 
@@ -48,7 +47,6 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 	const [insertAndUpdate, setInsertAndUpdate] = useState('저장');
 
 	const [changeData, setChangeData] = useState(null);
-	const [resetData, setResetData] = useState({});
 
 	// DB에 변화가 있을 때 실행됨
 	const channelA = supabase
@@ -106,14 +104,12 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 		console.log('openModal 값에 따라 재렌더링하는 useEffect이고 이 때의 checkId값:', checkId);
 		if (checkId) {
 			setInsertAndUpdate('수정');
-			getSeatInfo(clickedSeatRow).then(res => {
-				setValue('TextField', res.data[0].seat);
-				setValue('MUIPicker', moment(res.data[0].selected_at).format('YYYY-MM-DD'));
-				setValue('Select', res.data[0].feel);
-				setValue('memo', res.data[0].memo);
-			});
+			setValue('TextField', checkId.seat);
+			setValue('MUIPicker', moment(checkId.selected_at).format('YYYY-MM-DD'));
+			setValue('SelectMenu', checkId.feel);
+			setValue('memo', checkId.memo);
 		}
-	}, [openModal]);
+	}, [checkId]);
 
 	return (
 		<>
@@ -159,11 +155,11 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...
 								/>
 							</LocalizationProvider>
 							<Controller
-								name="Select"
+								name="SelectMenu"
 								control={control}
 								render={({ field: { value, onChange, ...field } }) => {
 									return (
-										<Select {...field} defaultValue={'feel'} onChange={onChange}>
+										<Select {...field} value={value} onChange={onChange}>
 											<MenuItem value={'feel'}>자리는 어떠셨나요</MenuItem>
 											<MenuItem value={'good'}>좋아요</MenuItem>
 											<MenuItem value={'soso'}>보통이에요</MenuItem>
