@@ -42,3 +42,9 @@ export async function deleteInfo(id) {
 
 	return deleteInfo;
 }
+
+// TODO: 버킷 연결했으니 다음 단계
+export async function imgBucket() {
+	const nani = await supabase.storage.getBucket('seats');
+	console.log(nani);
+}

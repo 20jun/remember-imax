@@ -22,7 +22,8 @@ import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo } from './seatAPI';
 
-function Modal({ clickedSeatRow, openModal, onClickNumber, infoAll, checkId, ...props }) {
+// TODO: 이미지 첨부
+function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) {
 	console.log('openModel true되어 Modal 컴포넌트 실행');
 	const {
 		register,

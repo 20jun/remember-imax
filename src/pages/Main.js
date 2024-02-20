@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+
 import Seat from './Seat';
 
 import styled from 'styled-components';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import Test from './Test';
 
 function Main() {
 	return (
@@ -12,6 +13,7 @@ function Main() {
 			<MainContainer>
 				<Header>Screen</Header>
 				<Seat />
+				<Test />
 			</MainContainer>
 		</>
 	);

@@ -8,6 +8,8 @@ import createSeat from '../components/createSeat';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 
+// TODO: 로그인
+// TODO: 네이밍 규칙 변경
 function Seat() {
 	// 클릭한 좌석의 열과 번호 합쳐서 저장
 	// A29, D17 ...
@@ -17,8 +19,6 @@ function Seat() {
 	// 클릭한 좌석의 열과 번호를 객체로 저장
 	// {charCode: 'A', idx: 29}
 	const [countIndex, setCountIndex] = useState(0);
-
-	const [infoAll, setInfoAll] = useState([]);
 
 	const [checkId, setCheckId] = useState(null);
 
@@ -32,6 +32,8 @@ function Seat() {
 		console.log('onClickNumber 좌석 클릭', number, toggle);
 		setOpenModal(toggle);
 		setClickedSeatRow(number);
+
+		// FIXME: 로직 변경: 좌석을 클릭할 때마다 checkId를 비우고, 해당 좌석 데이터 조회
 		setCheckId(null);
 
 		//  TODO: 규모가 커지게되면 캐시로 다루는 것이 좋음
@@ -50,11 +52,6 @@ function Seat() {
 	const handleOnClick = (e, charCode, idx) => {
 		setCountIndex({ charCode, idx });
 	};
-
-	useEffect(() => {
-		console.log('새로고침 시 가장 먼저 시작하는 useEffect로 테이블 데이터 전부 가져옴');
-		getInfo().then(result => setInfoAll(result));
-	}, []);
 
 	return (
 		<div>
@@ -98,7 +95,6 @@ function Seat() {
 					clickedSeatRow={clickedSeatRow}
 					openModal={openModal}
 					onClickNumber={onClickNumber}
-					infoAll={infoAll}
 					checkId={checkId}
 				/>
 			) : null}
