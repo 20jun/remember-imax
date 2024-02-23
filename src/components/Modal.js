@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { supabase } from '../supabaseClient';
 
+import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
 import {
@@ -20,7 +21,7 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo } from './seatAPI';
+import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo, uploadImage } from './seatAPI';
 
 // TODO: 이미지 첨부
 function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) {
@@ -43,8 +44,11 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		},
 	});
 
+	// TODO: 썸네일 state를 따로 생성할 지 고민
 	// 첨부한 이미지의 데이터 저장하는 state
 	const [picture, setPicture] = useState(null);
+	const [pictureThumb, setPictureThumb] = useState(null);
+
 	const [insertAndUpdate, setInsertAndUpdate] = useState('저장');
 
 	const [changeData, setChangeData] = useState(null);
@@ -66,6 +70,7 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		.subscribe();
 
 	const onClickDeleteButton = () => {
+		// TODO: 이미지도 같이 삭제되어야 함
 		deleteInfo(checkId);
 		onClickNumber('', false);
 	};
@@ -73,18 +78,24 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 	// 성공적으로 저장 시 발생하는 submit 이벤트
 	// data에는 form에 입력한 정보 저장되어 있음
 	const onSubmit = data => {
+		const uuid = uuidv4();
 		if (insertAndUpdate === '저장') {
-			console.log('저장:', data);
-			insertInfo(data);
+			console.log('저장:', data, uuid);
+			insertInfo(data, uuid);
+			uploadImage(picture, uuid);
 		} else {
+			// TODO: 수정 시 이미지 처리 방법
+			// TODO: 현재 아무것도 수정 안하고 수정 버튼 누르면 uuid가 바뀌어 엑박 뜸
 			console.log('수정:', data);
-			updateInfo(data, checkId);
+			updateInfo(data, checkId, uuid);
+			uploadImage(picture, uuid);
 		}
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달
 		onClickNumber('', false);
 		// 모달 창이 다시 열렀을 때 이전에 첨부한 이미지는 없어야 됨
 		setPicture(null);
+		setPictureThumb(null);
 	};
 
 	// 취소 버튼 클릭 시 모달 창 닫기 위한 이벤트
@@ -97,18 +108,22 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		console.log(e.target.files[0]);
 
 		if (e.target.files[0] !== undefined) {
-			setPicture(URL.createObjectURL(e.target.files[0]));
+			setPictureThumb(URL.createObjectURL(e.target.files[0]));
+			setPicture(e.target.files[0]);
 		}
 	};
 
 	useEffect(() => {
 		console.log('openModal 값에 따라 재렌더링하는 useEffect이고 이 때의 checkId값:', checkId);
+		console.log('picture', picture);
 		if (checkId) {
 			setInsertAndUpdate('수정');
 			setValue('TextField', checkId.seat);
 			setValue('MUIPicker', moment(checkId.selected_at).format('YYYY-MM-DD'));
 			setValue('SelectMenu', checkId.feel);
 			setValue('memo', checkId.memo);
+
+			setPictureThumb(checkId.imageSrc);
 		}
 	}, [checkId]);
 
@@ -182,10 +197,10 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 								}}
 							>
 								<input {...register('picture')} accept="image/*" hidden multiple type="file" />
-								{picture ? (
+								{pictureThumb ? (
 									<img
 										style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-										src={picture}
+										src={pictureThumb}
 									/>
 								) : (
 									<PhotoCamera sx={{}} color="primary" fontSize="large" />

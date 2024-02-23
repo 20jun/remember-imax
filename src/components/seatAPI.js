@@ -1,5 +1,7 @@
 import { supabase } from '../supabaseClient';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export async function getInfo() {
 	const getData = await supabase.from('INFO').select();
 	return getData;
@@ -10,29 +12,31 @@ export async function getSeatInfo(seat) {
 	return seatData;
 }
 
-export async function insertInfo(data) {
+export async function insertInfo(data, uuid) {
+	console.log(data, uuid);
 	const insertData = await supabase.from('INFO').insert({
 		seat: data.TextField,
 		selected_at: data.MUIPicker,
 		feel: data.SelectMenu,
-		imageSrc: data.picture,
+		imageSrc: `https://eregjxtiwiihjzlslbyu.supabase.co/storage/v1/object/public/seats/public/${uuid}.png`,
 		memo: data.memo,
 	});
 	console.log('insertData:', insertData);
 	return insertData;
 }
 
-export async function updateInfo(data, id) {
+export async function updateInfo(data, id, uuid) {
 	const updateData = await supabase
 		.from('INFO')
 		.update({
 			seat: data.TextField,
 			selected_at: data.MUIPicker,
 			feel: data.SelectMenu,
-			imageSrc: data.picture,
+			imageSrc: `https://eregjxtiwiihjzlslbyu.supabase.co/storage/v1/object/public/seats/public/${uuid}.png`,
 			memo: data.memo,
 		})
 		.eq('id', id.id);
+
 	return updateData;
 }
 
@@ -43,8 +47,9 @@ export async function deleteInfo(id) {
 	return deleteInfo;
 }
 
-// TODO: 버킷 연결했으니 다음 단계
-export async function imgBucket() {
-	const nani = await supabase.storage.getBucket('seats');
-	console.log(nani);
+// TODO: 경로와 파일명 수정
+export async function uploadImage(data, uuid) {
+	const uploadImg = await supabase.storage.from('seats').upload(`public/${uuid}.png`, data);
+	console.log(uploadImg);
+	return uploadImg;
 }
