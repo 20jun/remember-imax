@@ -21,7 +21,15 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { PhotoCamera } from '@mui/icons-material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { insertInfo, updateInfo, deleteInfo, getInfo, getSeatInfo, uploadImage } from './seatAPI';
+import {
+	insertInfo,
+	updateInfo,
+	deleteInfo,
+	getInfo,
+	getSeatInfo,
+	uploadImage,
+	deleteImage,
+} from './seatAPI';
 
 // TODO: 이미지 첨부
 function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) {
@@ -70,8 +78,8 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		.subscribe();
 
 	const onClickDeleteButton = () => {
-		// TODO: 이미지도 같이 삭제되어야 함
 		deleteInfo(checkId);
+		deleteImage(checkId);
 		onClickNumber('', false);
 	};
 
@@ -85,10 +93,11 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 			uploadImage(picture, uuid);
 		} else {
 			// TODO: 수정 시 이미지 처리 방법
-			// TODO: 현재 아무것도 수정 안하고 수정 버튼 누르면 uuid가 바뀌어 엑박 뜸
 			console.log('수정:', data);
 			updateInfo(data, checkId, uuid);
-			uploadImage(picture, uuid);
+			if (picture) {
+				uploadImage(picture, uuid);
+			}
 		}
 
 		// 선택한 좌석을 초기화하고 모달 창을 닫기 위해 toggle 값 false 전달

@@ -1,7 +1,5 @@
 import { supabase } from '../supabaseClient';
 
-import { v4 as uuidv4 } from 'uuid';
-
 export async function getInfo() {
 	const getData = await supabase.from('INFO').select();
 	return getData;
@@ -26,13 +24,18 @@ export async function insertInfo(data, uuid) {
 }
 
 export async function updateInfo(data, id, uuid) {
+	console.log(data.picture.length);
 	const updateData = await supabase
 		.from('INFO')
 		.update({
 			seat: data.TextField,
 			selected_at: data.MUIPicker,
 			feel: data.SelectMenu,
-			imageSrc: `https://eregjxtiwiihjzlslbyu.supabase.co/storage/v1/object/public/seats/public/${uuid}.png`,
+			// FIXME: 수정 시 이미지는 그대로 두는 경우에 대한 삼항연산자
+			imageSrc:
+				data.picture.length > 0
+					? `https://eregjxtiwiihjzlslbyu.supabase.co/storage/v1/object/public/seats/public/${uuid}.png`
+					: id.imageSrc,
 			memo: data.memo,
 		})
 		.eq('id', id.id);
@@ -52,4 +55,14 @@ export async function uploadImage(data, uuid) {
 	const uploadImg = await supabase.storage.from('seats').upload(`public/${uuid}.png`, data);
 	console.log(uploadImg);
 	return uploadImg;
+}
+
+export async function deleteImage(id) {
+	const splitName = id.imageSrc.split('/');
+	const fileName = splitName[9];
+	console.log(fileName);
+
+	const deleteImg = await supabase.storage.from('seats').remove([`public/${fileName}`]);
+
+	return deleteImg;
 }
