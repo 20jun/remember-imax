@@ -6,6 +6,31 @@ import { Button } from '@mui/material';
 
 function Test() {
 	const [authInfo, setAuthInfo] = useState(null);
+	const [checkSession, checkSetSession] = useState(null);
+
+	function onGetSession() {
+		supabase.auth.getSession().then(res => checkSetSession(res.data.session));
+	}
+
+	function onAuthStateChange() {
+		supabase.auth.onAuthStateChange((event, session) => {
+			console.log('event', event);
+			// console.log('session', session);
+			if (session && session.provider_token) {
+				window.localStorage.setItem('oauth_provider_token', session.provider_token);
+			}
+
+			if (session && session.provider_refresh_token) {
+				window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token);
+			}
+
+			if (event === 'SIGNED_OUT') {
+				window.localStorage.removeItem('oauth_provider_token');
+				window.localStorage.removeItem('oauth_provider_refresh_token');
+			}
+			// console.log('getItem', window.localStorage.getItem('oauth_provider_token'));
+		});
+	}
 
 	const login = async () => {
 		const ttt = await supabase.auth.signInWithOAuth({
@@ -17,22 +42,28 @@ function Test() {
 		setAuthInfo(ttt);
 	};
 
-	const check = () => {
-		console.log('hi');
+	const logout = async () => {
+		await supabase.auth.signOut();
+		checkSetSession(null);
 	};
 
-	console.log(authInfo);
+	// console.log(authInfo);
 
 	useEffect(() => {
-		console.log(document.cookie);
+		// console.log(document.cookie);
+		onGetSession();
+		onAuthStateChange();
 	}, []);
+
+	console.log(checkSession);
 
 	return (
 		<>
 			<Main>
 				<Header>로그인 테스트 페이지</Header>
-				<Button onClick={login}>로그인 테스트 버튼</Button>
-				<Button onClick={check}>체크 버튼</Button>
+
+				{checkSession ? <p>로그인 중</p> : <Button onClick={login}>로그인</Button>}
+				<Button onClick={logout}>로그아웃</Button>
 			</Main>
 		</>
 	);
