@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import Seat from './Seat';
+import Login from '../components/Login';
 
 import styled from 'styled-components';
 
@@ -8,12 +9,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 function Main() {
 	return (
-		<>
-			<MainContainer>
-				<Header>Screen</Header>
-				<Seat />
-			</MainContainer>
-		</>
+		<MainContainer>
+			<Header>Screen</Header>
+			<Seat />
+			<Login />
+		</MainContainer>
 	);
 }
 

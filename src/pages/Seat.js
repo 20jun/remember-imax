@@ -54,10 +54,10 @@ function Seat() {
 	};
 
 	return (
-		<div>
+		<Content>
 			{seatInfoArr.map((rows, index) => {
 				return (
-					<Content key={index}>
+					<SeatContent key={index}>
 						{/* 알파벳 표시 */}
 						<Row>{rows.charCode}</Row>
 
@@ -86,7 +86,7 @@ function Seat() {
 								</Number>
 							);
 						})}
-					</Content>
+					</SeatContent>
 				);
 			})}
 			{/* FIXME: 조건을 달지 않으면 화면에는 보이지 않지만 렌더링이 한 번 됨 */}
@@ -98,11 +98,13 @@ function Seat() {
 					checkId={checkId}
 				/>
 			) : null}
-		</div>
+		</Content>
 	);
 }
 
-const Content = styled.div`
+const Content = styled.div``;
+
+const SeatContent = styled.div`
 	display: flex;
 `;
 
