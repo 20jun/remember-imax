@@ -31,9 +31,10 @@ import {
 	deleteImage,
 } from './seatAPI';
 
-// TODO: 이미지 첨부
-function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) {
+// TODO: loginUser 너무 난잡하여 정리
+function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, loginUser, ...props }) {
 	console.log('openModel true되어 Modal 컴포넌트 실행');
+
 	const {
 		register,
 		handleSubmit,
@@ -78,8 +79,8 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		.subscribe();
 
 	const onClickDeleteButton = () => {
-		deleteInfo(checkId);
-		deleteImage(checkId);
+		deleteInfo(checkId, loginUser);
+		deleteImage(checkId, loginUser);
 		onClickNumber('', false);
 	};
 
@@ -89,14 +90,14 @@ function Modal({ clickedSeatRow, openModal, onClickNumber, checkId, ...props }) 
 		const uuid = uuidv4();
 		if (insertAndUpdate === '저장') {
 			console.log('저장:', data, uuid);
-			insertInfo(data, uuid);
-			uploadImage(picture, uuid);
+			insertInfo(data, uuid, loginUser);
+			uploadImage(picture, uuid, loginUser);
 		} else {
 			// TODO: 수정 시 이미지 처리 방법
 			console.log('수정:', data);
-			updateInfo(data, checkId, uuid);
+			updateInfo(data, checkId, uuid, loginUser);
 			if (picture) {
-				uploadImage(picture, uuid);
+				uploadImage(picture, uuid, loginUser);
 			}
 		}
 

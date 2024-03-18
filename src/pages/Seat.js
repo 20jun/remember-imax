@@ -8,9 +8,8 @@ import createSeat from '../components/createSeat';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 
-// TODO: 로그인
 // TODO: 네이밍 규칙 변경
-function Seat() {
+function Seat({ loginUser }) {
 	// 클릭한 좌석의 열과 번호 합쳐서 저장
 	// A29, D17 ...
 	const [clickedSeatRow, setClickedSeatRow] = useState('');
@@ -33,15 +32,19 @@ function Seat() {
 		setOpenModal(toggle);
 		setClickedSeatRow(number);
 
-		// FIXME: 로직 변경: 좌석을 클릭할 때마다 checkId를 비우고, 해당 좌석 데이터 조회
+		// HACK: 로직 변경: 좌석을 클릭할 때마다 checkId를 비우고, 해당 좌석 데이터 조회
 		setCheckId(null);
 
 		//  TODO: 규모가 커지게되면 캐시로 다루는 것이 좋음
 		if (toggle) {
-			getSeatInfo(number).then(res => {
-				console.log(res.data[0]);
-				setCheckId(res.data[0]);
-			});
+			console.log(loginUser);
+			if (loginUser !== null) {
+				console.log('실행');
+				getSeatInfo(number, loginUser).then(res => {
+					console.log(res.data[0]);
+					setCheckId(res.data[0]);
+				});
+			}
 		}
 	};
 
@@ -96,6 +99,7 @@ function Seat() {
 					openModal={openModal}
 					onClickNumber={onClickNumber}
 					checkId={checkId}
+					loginUser={loginUser}
 				/>
 			) : null}
 		</Content>
